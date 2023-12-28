@@ -1,0 +1,100 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel ShellTexture
+
+struct InputVertex
+{
+    float3 position;
+    float3 normal;
+    float2 uv;
+};
+
+struct InputTriangle
+{
+    InputVertex v0;
+    InputVertex v1;
+    InputVertex v2;
+};
+
+struct DrawVertex
+{
+    float3 position;
+    float3 normal;
+    float2 uv;
+    float4 vertexColor;
+};
+
+struct DrawTriangle
+{
+    DrawVertex drawVertices[3];
+};
+
+struct IndirectArg
+{
+    uint vertexCountPerInstance;
+    uint instanceCount;
+    uint startVertexIndex;
+    uint startInstanceIndex;
+};
+
+StructuredBuffer<InputTriangle> _InputTrianglesBuffer;
+AppendStructuredBuffer<DrawTriangle> _DrawTrianglesBuffer;
+RWStructuredBuffer<IndirectArg> _IndirectArgsBuffer;
+int _TriangleCount;
+float4x4 _LocalToWorld;
+int _Layers;
+float _HeightOffset;
+
+DrawVertex GetVertex(float3 position, float3 normal, float2 uv, float4 vertexColor)
+{
+    DrawVertex vertex;
+    vertex.position = mul(_LocalToWorld, float4(position, 1.0f)).xyz;
+    vertex.normal = mul(_LocalToWorld, float4(normal, 0.0f)).xyz;
+    vertex.normal = normalize(vertex.normal);
+    vertex.uv = uv;
+    vertex.vertexColor = vertexColor;
+    return vertex;
+}
+
+[numthreads(64,1,1)]
+void ShellTexture (uint3 id : SV_DispatchThreadID)
+{
+    if(id.x >= (uint)_TriangleCount)
+    {
+        return;
+    }
+    InputTriangle inputTriangle = _InputTrianglesBuffer[id.x];
+    DrawTriangle drawTriangle = (DrawTriangle)0;
+    for(int i = 0; i < _Layers; i++)
+    {
+        DrawVertex drawVertices[3];
+        float factor = (float) (i + 1) / (float) _Layers;
+
+        float3 worldy = float3(0.0, 1.0, 0.0);
+        InputVertex inputVertex = inputTriangle.v0;
+        float3 normal = inputVertex.normal;
+        //float3 position = inputVertex.position + (normal * _HeightOffset * factor);
+        float3 position = inputVertex.position + (worldy * _HeightOffset * factor);
+        float2 uv = inputVertex.uv;
+        float4 vertexColor = float4(factor, 0.0f, 0.0f, 0.0f);
+        drawTriangle.drawVertices[0] = GetVertex(position, normal, uv, vertexColor);
+
+        inputVertex = inputTriangle.v1;
+        normal = inputVertex.normal;
+        //position = inputVertex.position + (normal * _HeightOffset * factor);
+        position = inputVertex.position + (worldy * _HeightOffset * factor);
+        uv = inputVertex.uv;
+        vertexColor = float4(factor, 0.0f, 0.0f, 0.0f);
+        drawTriangle.drawVertices[1] = GetVertex(position, normal, uv, vertexColor);
+
+        inputVertex = inputTriangle.v2;
+        normal = inputVertex.normal;
+        //position = inputVertex.position + (normal * _HeightOffset * factor);
+        position = inputVertex.position + (worldy * _HeightOffset * factor);
+        uv = inputVertex.uv;
+        vertexColor = float4(factor, 0.0f, 0.0f, 0.0f);
+        drawTriangle.drawVertices[2] = GetVertex(position, normal, uv, vertexColor);
+
+        _DrawTrianglesBuffer.Append(drawTriangle);
+    }
+    InterlockedAdd(_IndirectArgsBuffer[0].vertexCountPerInstance, 3 * _Layers);
+}
