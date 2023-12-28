@@ -5300,7 +5300,7 @@ MonoBehaviour:
   shellTextureCS: {fileID: 7200000, guid: 0dada41571b34a14c9889ae33d0ad75b, type: 3}
   renderingMaterial: {fileID: 2100000, guid: 9efeed4e2ffda3145855e12f5322be91, type: 2}
   layers: 50
-  heightOffset: 1.6
+  heightOffset: 1.8
 --- !u!64 &833550029
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -5382,7 +5382,7 @@ Transform:
   m_GameObject: {fileID: 833550027}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.9369, y: 1, z: 1.9369}
+  m_LocalScale: {x: 1.5, y: 1, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
