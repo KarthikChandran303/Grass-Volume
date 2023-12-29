@@ -68,7 +68,7 @@ Shader "Unlit/ShellTexture"
 
                 o.worldPos = mul(unity_ObjectToWorld, float4(v.position, 1));
                 o.vertex = UnityObjectToClipPos(v.position);
-                o.uv = v.uv;
+                o.uv = v.uv * _MainTex_ST.xy;;
                 o.color = v.vertexColor;
                 return o;
             }
@@ -86,11 +86,13 @@ Shader "Unlit/ShellTexture"
                 particleuv = particleuv/ (_OrthographicCamSize * 2);
                 particleuv += 0.5;
 
+                float square = step(particleuv.x, 1.0) * step(particleuv.y, 1.0) * step(0.0, particleuv.x) * step(0.0, particleuv.y);
+
                 float particle = tex2D(_ParticleTexture, particleuv).b;
+
+                //float circle = 1.0 - smoothstep(14.0 , 15.0, distance(i.worldPos.xz, _Position.xz));
+                particle = particle * square;
                 
-                float2 uv = frac(i.uv * 100);
-                uv = uv * 2 - 1;
-                float circle = 1 - length(uv);
                 clip(tex - i.color.x - (particle * 0.35));
 
                 return _Color * i.color.x;

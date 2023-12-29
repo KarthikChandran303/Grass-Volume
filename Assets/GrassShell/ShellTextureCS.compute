@@ -47,12 +47,17 @@ float _HeightOffset;
 DrawVertex GetVertex(float3 position, float3 normal, float2 uv, float4 vertexColor)
 {
     DrawVertex vertex;
-    vertex.position = mul(_LocalToWorld, float4(position, 1.0f)).xyz;
+    //vertex.position = mul(_LocalToWorld, float4(position, 1.0f)).xyz;
+    vertex.position = position;
     vertex.normal = mul(_LocalToWorld, float4(normal, 0.0f)).xyz;
-    vertex.normal = normalize(vertex.normal);
     vertex.uv = uv;
     vertex.vertexColor = vertexColor;
     return vertex;
+}
+
+float3 transformPositionLocalToWorld(float3 position)
+{
+    return mul(_LocalToWorld, float4(position, 1.0f)).xyz;
 }
 
 [numthreads(64,1,1)]
@@ -73,7 +78,7 @@ void ShellTexture (uint3 id : SV_DispatchThreadID)
         InputVertex inputVertex = inputTriangle.v0;
         float3 normal = inputVertex.normal;
         //float3 position = inputVertex.position + (normal * _HeightOffset * factor);
-        float3 position = inputVertex.position + (worldy * _HeightOffset * factor);
+        float3 position = transformPositionLocalToWorld(inputVertex.position) + (worldy * _HeightOffset * factor);
         float2 uv = inputVertex.uv;
         float4 vertexColor = float4(factor, 0.0f, 0.0f, 0.0f);
         drawTriangle.drawVertices[0] = GetVertex(position, normal, uv, vertexColor);
@@ -81,7 +86,7 @@ void ShellTexture (uint3 id : SV_DispatchThreadID)
         inputVertex = inputTriangle.v1;
         normal = inputVertex.normal;
         //position = inputVertex.position + (normal * _HeightOffset * factor);
-        position = inputVertex.position + (worldy * _HeightOffset * factor);
+        position = transformPositionLocalToWorld(inputVertex.position) + (worldy * _HeightOffset * factor);
         uv = inputVertex.uv;
         vertexColor = float4(factor, 0.0f, 0.0f, 0.0f);
         drawTriangle.drawVertices[1] = GetVertex(position, normal, uv, vertexColor);
@@ -89,7 +94,7 @@ void ShellTexture (uint3 id : SV_DispatchThreadID)
         inputVertex = inputTriangle.v2;
         normal = inputVertex.normal;
         //position = inputVertex.position + (normal * _HeightOffset * factor);
-        position = inputVertex.position + (worldy * _HeightOffset * factor);
+        position = transformPositionLocalToWorld(inputVertex.position) + (worldy * _HeightOffset * factor);
         uv = inputVertex.uv;
         vertexColor = float4(factor, 0.0f, 0.0f, 0.0f);
         drawTriangle.drawVertices[2] = GetVertex(position, normal, uv, vertexColor);
