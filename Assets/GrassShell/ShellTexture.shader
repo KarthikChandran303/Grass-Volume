@@ -79,6 +79,8 @@ Shader "Unlit/ShellTexture"
                 
                 float wind = tex2D(_WindTex, i.uv + float2(0, _Time.y * _ScrollSpeed)).x;
                 wind = wind * 2 - 1;
+                float windCol = smoothstep(0.0, 0.5, wind);
+
                 float tex = tex2D(_MainTex, i.uv + float2(0, wind * _WindStrength * (i.color.x * i.color.x))).x;
 
                 float2 particleuv = i.worldPos.xz - _Position.xz;
@@ -89,13 +91,15 @@ Shader "Unlit/ShellTexture"
                 float square = step(particleuv.x, 1.0) * step(particleuv.y, 1.0) * step(0.0, particleuv.x) * step(0.0, particleuv.y);
 
                 float particle = tex2D(_ParticleTexture, particleuv).b;
-
-                //float circle = 1.0 - smoothstep(14.0 , 15.0, distance(i.worldPos.xz, _Position.xz));
+                
                 particle = particle * square;
                 
                 clip(tex - i.color.x - (particle * 0.35));
 
-                return _Color * i.color.x;
+                float ratio = smoothstep(tex - 0.15, tex, i.color.x) * windCol;
+                float4 finalCol = (_Color * i.color.x) + (ratio * 0.065);
+
+                return finalCol;
             }
             ENDCG
         }
