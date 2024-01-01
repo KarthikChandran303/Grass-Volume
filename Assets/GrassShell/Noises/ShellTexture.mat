@@ -89,7 +89,8 @@ Material:
     - _WindStrength: 0.012
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.4745098, g: 0.74509805, b: 0.5096802, a: 1}
+    - _Color: {r: 0.5896226, g: 1, b: 0.64393735, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _Position: {r: 1.8931795, g: 8.66, b: 0.62158245, a: 0}
+    - _Position: {r: -0.4885173, g: 8.66, b: -2.0799677, a: 0}
+    - _SecondaryColor: {r: 0.1721698, g: 0.5, b: 0.21588045, a: 1}
   m_BuildTextureStacks: []

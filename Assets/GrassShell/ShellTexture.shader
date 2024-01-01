@@ -3,6 +3,7 @@ Shader "Unlit/ShellTexture"
     Properties
     {
         _Color ("Color", Color) = (1,1,1,1)
+        _SecondaryColor ("SecondaryColor", Color) = (1,1,1,1)
         _MainTex ("Texture", 2D) = "white" {}
         _WindTex ("WindTexture", 2D) = "white" {}
         _ParticleTexture ("ParticleTexture", 2D) = "white" {}
@@ -34,6 +35,7 @@ Shader "Unlit/ShellTexture"
             };
 
             fixed4 _Color;
+            fixed4 _SecondaryColor;
             sampler2D _MainTex;
             float4 _MainTex_ST;
             sampler2D _WindTex;
@@ -97,7 +99,8 @@ Shader "Unlit/ShellTexture"
                 clip(tex - i.color.x - (particle * 0.35));
 
                 float ratio = smoothstep(tex - 0.15, tex, i.color.x) * windCol;
-                float4 finalCol = (_Color * i.color.x) + (ratio * 0.065);
+                float4 col = lerp(_SecondaryColor, _Color, i.color.x);
+                float4 finalCol = (col) + (ratio * 0.065);
 
                 return finalCol;
             }
