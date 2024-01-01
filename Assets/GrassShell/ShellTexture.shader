@@ -79,7 +79,7 @@ Shader "Unlit/ShellTexture"
                 
                 float wind = tex2D(_WindTex, i.uv + float2(0, _Time.y * _ScrollSpeed)).x;
                 wind = wind * 2 - 1;
-                float windCol = smoothstep(0.0, 0.5, wind);
+                float windCol = smoothstep(0.1, 0.5, wind);
 
                 float tex = tex2D(_MainTex, i.uv + float2(0, wind * _WindStrength * (i.color.x * i.color.x))).x;
 
