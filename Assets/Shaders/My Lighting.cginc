@@ -13,7 +13,7 @@ float4 _MainTex_ST;
 float _Metallic;
 float _Smoothness;
 
-sampler2D _HeightMap;
+sampler2D _NormalMap;
 
 float _BumpScale;
 float _Delta;
@@ -89,14 +89,9 @@ UnityIndirect CreateIndirectLight (Interpolators i) {
 
 void InitializeFragmentNormal(inout Interpolators i)
 {
-	float deltau = _Delta;
-	float deltav = 0.02;
-	float h = tex2D(_HeightMap, i.uv).r;
-	float h1 = tex2D(_HeightMap, i.uv + float2(deltau, 0)).r;
-	float diff = h1 - h;
-	float2 hdeltau = float2(deltau, (h1 - h));
-	hdeltau = normalize(hdeltau);
-	i.normal = float3 (hdeltau.x, hdeltau.y, 0.0f);
+	i.normal = UnpackScaleNormal(tex2D(_NormalMap, i.uv), _BumpScale);
+	i.normal = i.normal.xzy;
+	i.normal = normalize(i.normal);
 }
 
 float4 MyFragmentProgram (Interpolators i) : SV_TARGET {
@@ -105,7 +100,7 @@ float4 MyFragmentProgram (Interpolators i) : SV_TARGET {
 	float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
 
 	float3 albedo = tex2D(_MainTex, i.uv).rgb * _Tint.rgb;
-	albedo = i.normal;
+	//albedo = i.normal;
 
 	float3 specularTint;
 	float oneMinusReflectivity;
