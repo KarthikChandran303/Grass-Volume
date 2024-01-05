@@ -7,26 +7,23 @@
 #include "UnityPBSLighting.cginc"
 
 float4 _Tint;
-sampler2D _MainTex;
-float4 _MainTex_ST;
+sampler2D _MainTex, _DetailMap, _NormalMap;
+float4 _MainTex_ST, _DetailMap_ST;
+float _BumpScale, _DetailBumpScale;
 
 float _Metallic;
 float _Smoothness;
 
-sampler2D _NormalMap;
-
-float _BumpScale;
-float _Delta;
 
 struct VertexData {
 	float4 position : POSITION;
 	float3 normal : NORMAL;
-	float2 uv : TEXCOORD0;
+	float4 uv : TEXCOORD0;
 };
 
 struct Interpolators {
 	float4 position : SV_POSITION;
-	float2 uv : TEXCOORD0;
+	float4 uv : TEXCOORD0;
 	float3 normal : TEXCOORD1;
 	float3 worldPos : TEXCOORD2;
 
@@ -51,7 +48,8 @@ Interpolators MyVertexProgram (VertexData v) {
 	i.position = UnityObjectToClipPos(v.position);
 	i.worldPos = mul(unity_ObjectToWorld, v.position);
 	i.normal = UnityObjectToWorldNormal(v.normal);
-	i.uv = TRANSFORM_TEX(v.uv, _MainTex);
+	i.uv.xy = TRANSFORM_TEX(v.uv, _MainTex);
+	i.uv.zw = TRANSFORM_TEX(v.uv, _DetailMap);
 	ComputeVertexLightColor(i);
 	return i;
 }
@@ -89,7 +87,9 @@ UnityIndirect CreateIndirectLight (Interpolators i) {
 
 void InitializeFragmentNormal(inout Interpolators i)
 {
-	i.normal = UnpackScaleNormal(tex2D(_NormalMap, i.uv), _BumpScale);
+	float3 mainNormal = UnpackScaleNormal(tex2D(_NormalMap, i.uv.xy), _BumpScale);
+	float3 detailNormal = UnpackScaleNormal(tex2D(_DetailMap, i.uv.zw), _DetailBumpScale);
+	i.normal = BlendNormals(mainNormal, detailNormal);
 	i.normal = i.normal.xzy;
 	i.normal = normalize(i.normal);
 }
@@ -99,7 +99,8 @@ float4 MyFragmentProgram (Interpolators i) : SV_TARGET {
 	
 	float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
 
-	float3 albedo = tex2D(_MainTex, i.uv).rgb * _Tint.rgb;
+	float3 albedo = tex2D(_MainTex, i.uv.xy).rgb * _Tint.rgb;
+	float detail = tex2D(_DetailMap, i.uv.zw).r * 2.0f;
 	//albedo = i.normal;
 
 	float3 specularTint;
