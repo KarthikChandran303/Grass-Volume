@@ -222,8 +222,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shellTextureCS: {fileID: 7200000, guid: 0dada41571b34a14c9889ae33d0ad75b, type: 3}
   renderingMaterial: {fileID: 2100000, guid: 9efeed4e2ffda3145855e12f5322be91, type: 2}
-  layers: 40
-  heightOffset: 1.9
+  layers: 70
+  heightOffset: 2.1
 --- !u!1 &501040065
 GameObject:
   m_ObjectHideFlags: 0
@@ -868,6 +868,10 @@ PrefabInstance:
     - target: {fileID: 3206903686519526162, guid: d11ae684d1762394a9bb0b635c8c33a5, type: 3}
       propertyPath: m_Name
       value: RollABall
+      objectReference: {fileID: 0}
+    - target: {fileID: 3206903686519526162, guid: d11ae684d1762394a9bb0b635c8c33a5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3206903686519526166, guid: d11ae684d1762394a9bb0b635c8c33a5, type: 3}
       propertyPath: m_RootOrder
