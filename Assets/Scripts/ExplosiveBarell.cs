@@ -1,12 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
+using Vector3 = System.Numerics.Vector3;
 
 [ExecuteAlways]
 public class ExplosiveBarell : MonoBehaviour
 {
-    public Color color;
+    public BarrelType type;
 
     private MaterialPropertyBlock mpb;
 
@@ -23,21 +26,41 @@ public class ExplosiveBarell : MonoBehaviour
         }
     }
 
-    void ApplyColor()
+    public void TryApplyColor()
     {
+        if(type == null)
+        {
+            return;
+        }
         MeshRenderer mr = GetComponent<MeshRenderer>();
-        Mpb.SetColor(shPropColor, color);
+        Mpb.SetColor(shPropColor, type.color);
         mr.SetPropertyBlock(Mpb);
     }
 
     private void OnEnable()
     {
-        ApplyColor();
+        TryApplyColor();
         BarellManager.explosiveBarells.Add(this);
     }
     private void OnDisable() => BarellManager.explosiveBarells.Remove(this);
+    private void OnValidate() => TryApplyColor();
+
+    void OnDrawGizmosSelected()
+    {
+        if(type == null)
+        {
+            return;
+        }
+        
+    }
 
     private void OnDrawGizmos()
     {
+        if(type == null)
+        {
+            return;
+        }
+        Handles.color = type.color;
+        Handles.DrawWireDisc(transform.position, transform.up, type.radius);
     }
 }
