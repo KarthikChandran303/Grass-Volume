@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b023d6c9c4c94e74a939bda2470bbb24, type: 3}
   m_Name: Green
   m_EditorClassIdentifier: 
-  radius: 8.02
+  radius: 3.53
   damage: 0
   color: {r: 0.15481488, g: 0.6698113, b: 0.21962963, a: 1}
