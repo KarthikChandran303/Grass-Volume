@@ -13,7 +13,7 @@ public static class Snapper {
         foreach (GameObject go in Selection.gameObjects)
         {
             Undo.RecordObject(go.transform, UNDO_SNAP);
-            go.transform.position = go.transform.position.Round();
+            go.transform.position = go.transform.position.Round();  
         }
     }
 
